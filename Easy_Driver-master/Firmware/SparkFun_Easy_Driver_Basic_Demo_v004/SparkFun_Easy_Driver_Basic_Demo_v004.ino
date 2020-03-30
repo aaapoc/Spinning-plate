@@ -30,6 +30,7 @@ int incomingByte = 0; //for incoming serial data
 int x;
 int y;
 int state;
+int speed = 0; // speed = 0-128, 64 is stopped
 
 void setup() {
   pinMode(stp, OUTPUT);
@@ -88,14 +89,21 @@ void resetEDPins()
 //Default microstep mode function
 void StepForwardDefault()
 {
-  Serial.println("Moving forward at default step mode.");
-  digitalWrite(dir, LOW); //Pull direction pin low to move "forward"
+  Serial.println("Moving at speed %d.",speed);
+  if (speed < 64) {
+  digitalWrite(dir, LOW);
+  } else {
+  digitalWrite(dir, HIGH); //Pull direction pin low to move "forward
+  }
+  speed = speed - 64;
+  speed = abs(speed);
+  speed = 64 - speed;
   for ever  //Loop forever
   {
     digitalWrite(stp,HIGH); //Trigger one step forward
     delay(1);
     digitalWrite(stp,LOW); //Pull step pin low so it can be triggered again
-    delay(1);
+    delay(speed+1);
   }
   Serial.println("Enter new option");
   Serial.println();
